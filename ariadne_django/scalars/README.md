@@ -27,8 +27,12 @@ schema = make_executable_schema(type_defs, [date_scalar, datetime_scalar, ...])
 
 ## Date, Datetime, Time Scalars
 
-For convenience ariadne_django also provides Date, DateTime, and Time scalar implementations that can be used to represent Django dates and datetimes in form understood by JS date and time handling libraries like Moment.js.
+For convenience ariadne_django also provides:
+- Date, DateTime, and Time scalar implementations that can be used to represent Django dates and datetimes in form understood by JS date and time handling libraries like Moment.js.
+- Decimal for python's decimal.Decimal implementation (and Django's DecimalField)
+- UUID scalar allow for interactions with uuid.UUID objects, which are often used for UUIDFields
+- JSON scalar for JSON Fields
 
 ## Other types
 
-We aim to release additional scalar types for common types (e.g. UUID) in future releases.  We welcome contributions of new scalar types!
+We welcome contributions of new scalar types!
