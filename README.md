@@ -1,13 +1,6 @@
-[![Ariadne](https://ariadne_djangographql.org/img/logo-horizontal-sm.png)](https://ariadne_djangographql.org)
+![Build Status](https://github.com/reset-button/ariadne_django/actions/workflows/main.yml/badge.svg)](https://github.com/reset-button/ariadne_django/actions/workflows/main.yml)
+[![Codecov](https://codecov.io/gh/reset-button/ariadne_django/branch/main/graph/badge.svg)](https://codecov.io/gh/reset-button/ariadne_django)
 
-![Build Status](https://github.com/reset-button/ariadne_django/actions/workflows/tests.yml/badge.svg?branch=master)
-[![Codecov](https://codecov.io/gh/reset-button/ariadne_django/branch/master/graph/badge.svg)](https://codecov.io/gh/reset-button/ariadne_django)
-
-
-# Warning
-
-We strongly recommend against using this in production until this warning is removed.  Converted/refactored code has not yet been fully tested.
-This warning will be removed as part of the release process.
 
 # Ariadne
 
