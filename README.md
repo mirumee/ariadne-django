@@ -1,5 +1,4 @@
-![Build Status](https://github.com/reset-button/ariadne_django/actions/workflows/main.yml/badge.svg)](https://github.com/reset-button/ariadne_django/actions/workflows/main.yml)
-[![Codecov](https://codecov.io/gh/reset-button/ariadne_django/branch/main/graph/badge.svg)](https://codecov.io/gh/reset-button/ariadne_django)
+[![Tests](https://github.com/reset-button/ariadne_django/actions/workflows/main.yml/badge.svg)](https://github.com/reset-button/ariadne_django/actions/workflows/main.yml)
 
 
 # Ariadne
