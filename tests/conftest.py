@@ -12,18 +12,14 @@ def pytest_configure():
         USE_TZ=True,
         TIME_ZONE="America/Chicago",
         INSTALLED_APPS=["ariadne_django"],
-        TEMPLATES=[
-            {
-                "BACKEND": "django.template.backends.django.DjangoTemplates",
-                "APP_DIRS": True,
-            }
-        ],
+        TEMPLATES=[{"BACKEND": "django.template.backends.django.DjangoTemplates", "APP_DIRS": True,}],
     )
 
 
 @pytest.fixture
 def request_factory():
     return RequestFactory()
+
 
 @pytest.fixture
 def type_defs():
@@ -124,9 +120,7 @@ def subscriptions():
 
 @pytest.fixture
 def schema(type_defs, resolvers, mutations, subscriptions):
-    return make_executable_schema(
-        type_defs, [resolvers, mutations, subscriptions, upload_scalar]
-    )
+    return make_executable_schema(type_defs, [resolvers, mutations, subscriptions, upload_scalar])
 
 
 @pytest.fixture

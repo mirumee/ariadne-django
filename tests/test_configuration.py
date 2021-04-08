@@ -17,52 +17,32 @@ def execute_query(request_factory, schema, query, **kwargs):
     return json.loads(response.content)
 
 
-def test_value_error_is_raised_when_view_was_initialized_without_schema(
-    request_factory,
-):
+def test_value_error_is_raised_when_view_was_initialized_without_schema(request_factory,):
     with pytest.raises(ValueError):
         execute_query(request_factory, None, {"query": "{ testContext }"})
 
 
 def test_custom_context_value_is_passed_to_resolvers(request_factory, schema):
-    data = execute_query(
-        request_factory,
-        schema,
-        {"query": "{ testContext }"},
-        context_value={"test": "TEST-CONTEXT"},
-    )
+    data = execute_query(request_factory, schema, {"query": "{ testContext }"}, context_value={"test": "TEST-CONTEXT"},)
     assert data == {"data": {"testContext": "TEST-CONTEXT"}}
 
 
 def test_custom_context_value_function_is_set_and_called_by_app(request_factory, schema):
     get_context_value = Mock(return_value=True)
     execute_query(
-        request_factory,
-        schema,
-        {"query": "{ status }"},
-        context_value=get_context_value,
+        request_factory, schema, {"query": "{ status }"}, context_value=get_context_value,
     )
     get_context_value.assert_called_once()
 
 
 def test_custom_context_value_function_result_is_passed_to_resolvers(request_factory, schema):
     get_context_value = Mock(return_value={"test": "TEST-CONTEXT"})
-    data = execute_query(
-        request_factory,
-        schema,
-        {"query": "{ testContext }"},
-        context_value=get_context_value,
-    )
+    data = execute_query(request_factory, schema, {"query": "{ testContext }"}, context_value=get_context_value,)
     assert data == {"data": {"testContext": "TEST-CONTEXT"}}
 
 
 def test_custom_root_value_is_passed_to_resolvers(request_factory, schema):
-    data = execute_query(
-        request_factory,
-        schema,
-        {"query": "{ testRoot }"},
-        root_value={"test": "TEST-ROOT"},
-    )
+    data = execute_query(request_factory, schema, {"query": "{ testRoot }"}, root_value={"test": "TEST-ROOT"},)
     assert data == {"data": {"testRoot": "TEST-ROOT"}}
 
 
@@ -87,10 +67,7 @@ def test_custom_root_value_function_is_called_with_context_value(request_factory
 def test_custom_validation_rule_is_called_by_query_validation(mocker, request_factory, schema, validation_rule):
     spy_validation_rule = mocker.spy(validation_rule, "__init__")
     execute_query(
-        request_factory,
-        schema,
-        {"query": "{ status }"},
-        validation_rules=[validation_rule],
+        request_factory, schema, {"query": "{ status }"}, validation_rules=[validation_rule],
     )
     spy_validation_rule.assert_called_once()
 
@@ -101,10 +78,7 @@ def test_custom_validation_rules_function_is_set_and_called_on_query_execution(
     spy_validation_rule = mocker.spy(validation_rule, "__init__")
     get_validation_rules = Mock(return_value=[validation_rule])
     execute_query(
-        request_factory,
-        schema,
-        {"query": "{ status }"},
-        validation_rules=get_validation_rules,
+        request_factory, schema, {"query": "{ status }"}, validation_rules=get_validation_rules,
     )
     get_validation_rules.assert_called_once()
     spy_validation_rule.assert_called_once()
@@ -127,11 +101,7 @@ def test_extensions_function_result_is_passed_to_query_executor(request_factory,
     extension = Mock(spec=ExtensionSync, format=Mock(return_value={}))
     get_extensions = Mock(return_value=[Mock(return_value=extension)])
     execute_query(
-        request_factory,
-        schema,
-        {"query": "{ status }"},
-        context_value=context,
-        extensions=get_extensions,
+        request_factory, schema, {"query": "{ status }"}, context_value=context, extensions=get_extensions,
     )
     get_extensions.assert_called_once()
     extension.request_started.assert_called_once_with(context)

@@ -44,11 +44,7 @@ class GraphQLView(TemplateView):
         if self.playground_options:
             options.update(self.playground_options)
 
-        return render(
-            request,
-            self.get_template_names(),
-            {"playground_options": json.dumps(options)},
-        )
+        return render(request, self.get_template_names(), {"playground_options": json.dumps(options)},)
 
     def post(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
         if not self.schema:
