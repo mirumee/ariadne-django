@@ -1,0 +1,3 @@
+ariadne>=0.13.0,<0.13.99
+django>=2.2
+python-dateutil==2.8.1
