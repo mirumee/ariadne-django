@@ -32,7 +32,10 @@ setup(
     url="https://github.com/reset-button/ariadne_django",
     packages=["ariadne"],
     include_package_data=True,
-    install_requires=["django>=2.2.0", "ariadne>=0.12.0",],
+    install_requires=[
+        "django>=2.2.0",
+        "ariadne>=0.12.0",
+    ],
     classifiers=CLASSIFIERS,
     platforms=["any"],
     zip_safe=False,

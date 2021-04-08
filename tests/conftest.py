@@ -12,7 +12,12 @@ def pytest_configure():
         USE_TZ=True,
         TIME_ZONE="America/Chicago",
         INSTALLED_APPS=["ariadne_django"],
-        TEMPLATES=[{"BACKEND": "django.template.backends.django.DjangoTemplates", "APP_DIRS": True,}],
+        TEMPLATES=[
+            {
+                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "APP_DIRS": True,
+            }
+        ],
     )
 
 
