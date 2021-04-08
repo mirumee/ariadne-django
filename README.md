@@ -19,8 +19,8 @@ This allows us to be responsive to the needs of both Django and Ariadne.
 
 ## Principles
 
-This project is committed to maintaining Ariadne's schema-first approach.  We may offer tooling that simplifies the mapping of Django of models to schema types (or similar), but not require it's usage.
-This project will not require Django REST Framework, but will provide features leveraging common DRF tools (e.g. serializers) that provide significant functionality and performance enhancements beyond Django Forms.
+This project is committed to maintaining Ariadne's schema-first approach.  We may offer tooling that simplifies the mapping of Django models to schema types (or similar), but we won't require its usage.
+This project does not require Django REST Framework, but will provide features leveraging common DRF tools (e.g. serializers) that provide significant functionality and performance enhancements beyond Django Forms.
 
 ## Installation
 
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
 ]
 ```
 
-Ariadne app provides Django template for GraphQL Playground. Make sure that your Django project is configured to load templates from application directories. This can be done by checking if APP_DIRS option located in TEMPLATES setting is set to True:
+The Ariadne app provides a Django template for GraphQL Playground. Make sure that your Django project is configured to load templates from application directories. This can be done by checking if APP_DIRS option located in TEMPLATES setting is set to True:
 
 ```
 TEMPLATES = [
@@ -92,14 +92,14 @@ urlpatterns = [
 ]
 ```
 
-GraphQLView.as_view() takes mostly the same options that graphql does, but with one difference:
+GraphQLView.as_view() takes mostly the same options that graphql does, but with some differences:
 - debug option is not available and it's set to the value of settings.DEBUG
 - Django GraphQL view supports extra option specific to it: playground_options, a dict of GraphQL Playground options that should be used.
 
 
 ### Channels
 
-Ariadne's ASGI application can be used together with Django Channels to implement asynchronous GraphQL API with features like subscriptions:
+Ariadne's ASGI application can be used together with Django Channels to implement an asynchronous GraphQL API with features like subscriptions:
 
 ```
 from ariadne.asgi import GraphQL
@@ -117,9 +117,9 @@ application = URLRouter([
 ])
 ```
 
-At the moment Django ORM doesn't support asynchronous query execution and there is noticeable performance loss when using it for database access in asynchronous resolvers.
+At the moment, Django ORM doesn't support asynchronous query execution and there is noticeable performance loss when using it for database access in asynchronous resolvers.
 
-Use asynchronous ORM such as Gino for database queries in your resolvers.
+To get around this, you can use an asynchronous ORM such as Gino for database queries in your resolvers.
 
 ## Upgrading from ariadne.contrib.django
 
