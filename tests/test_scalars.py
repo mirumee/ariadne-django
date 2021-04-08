@@ -1,18 +1,31 @@
 # pylint: disable=comparison-with-callable,protected-access
+import uuid
+from decimal import Decimal, InvalidOperation
+
 from django.utils import timezone
 
 import pytest
+from simplejson import JSONDecodeError
 
 from ariadne_django.scalars import (
     date_scalar,
     datetime_scalar,
+    decimal_scalar,
+    json_scalar,
     parse_date_value,
     parse_datetime_value,
+    parse_decimal_value,
+    parse_json_value,
     parse_time_value,
+    parse_uuid_value,
     serialize_date,
     serialize_datetime,
+    serialize_decimal,
+    serialize_json,
     serialize_time,
+    serialize_uuid,
     time_scalar,
+    uuid_scalar,
 )
 
 
@@ -37,6 +50,19 @@ def test_date_serializer_serializes_datetime(datetime, date):
 
 def test_date_serializer_serializes_date(date):
     assert serialize_date(date) == date.isoformat()
+
+
+def test_decimal_serializer_serializes_decimal():
+    assert serialize_decimal(Decimal("5.0")) == "5.0"
+
+
+def test_json_serializer_serializes_json():
+    assert serialize_json({"cat": "meow"}) == '{"cat": "meow"}'
+
+
+def test_uuid_serializer_serializes_uuid():
+    uuid_str = "e6cbf26a-327f-4fd6-9d28-25738a47e303"
+    assert serialize_uuid(uuid.UUID(uuid_str)) == uuid_str
 
 
 def test_date_parser_returns_valid_date_from_datetime_iso8601_str(datetime, date):
@@ -83,6 +109,39 @@ def test_datetime_parser_raises_value_error_on_invalid_data():
         parse_datetime_value("nothing")
 
 
+def test_decimal_parser_parses_string():
+    assert parse_decimal_value("5.0") == Decimal("5.0")
+
+
+def test_decimal_parser_raises_invalid_operation_on_invalid_coerceable_type():
+    with pytest.raises(InvalidOperation):
+        parse_decimal_value(5)
+
+
+def test_decimal_parser_raises_invalid_operation_on_invalid_data():
+    with pytest.raises(InvalidOperation):
+        parse_decimal_value("meow")
+
+
+def test_json_parser_parses_string():
+    assert parse_json_value('{"cat": "meow"}') == {"cat": "meow"}
+
+
+def test_json_parser_raises_invalid_operation_on_invalid_data():
+    with pytest.raises(JSONDecodeError):
+        parse_json_value("meow")
+
+
+def test_uuid_parser_parses_uuid_string():
+    uuid_str = "bb7efd70-b1cd-11ea-a5af-0242ac130006"
+    assert parse_uuid_value(uuid_str) == uuid.UUID(uuid_str)
+
+
+def test_uuid_parser_raises_value_error_on_invalid_data():
+    with pytest.raises(ValueError):
+        parse_uuid_value("nothing")
+
+
 def test_time_serializer_serializes_time(time):
     assert serialize_time(time) == time.isoformat()
 
@@ -126,3 +185,27 @@ def test_time_scalar_has_serializer_set():
 
 def test_time_scalar_has_value_parser_set():
     assert time_scalar._parse_value == parse_time_value
+
+
+def test_decimal_scalar_has_serializer_set():
+    assert decimal_scalar._serialize == serialize_decimal
+
+
+def test_decimal_scalar_has_value_parser_set():
+    assert decimal_scalar._parse_value == parse_decimal_value
+
+
+def test_json_scalar_has_serializer_set():
+    assert json_scalar._serialize == serialize_json
+
+
+def test_json_scalar_has_value_parser_set():
+    assert json_scalar._parse_value == parse_json_value
+
+
+def test_uuid_scalar_has_serializer_set():
+    assert uuid_scalar._serialize == serialize_uuid
+
+
+def test_uuid_scalar_has_value_parser_set():
+    assert uuid_scalar._parse_value == parse_uuid_value
