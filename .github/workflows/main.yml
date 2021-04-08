@@ -31,5 +31,5 @@ jobs:
       run: |
         pylint ariadne_django tests setup.py
         mypy ariadne_django --ignore-missing-imports
-        black --check .
+        black -l 120 --check .
         isort -c .
