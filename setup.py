@@ -30,11 +30,11 @@ setup(
     license="BSD",
     version="0.1.0",
     url="https://github.com/reset-button/ariadne_django",
-    packages=["ariadne"],
+    packages=["ariadne_django"],
     include_package_data=True,
     install_requires=[
         "django>=2.2.0",
-        "ariadne>=0.12.0",
+        "ariadne>=0.13.0",
     ],
     classifiers=CLASSIFIERS,
     platforms=["any"],
