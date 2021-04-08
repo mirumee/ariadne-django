@@ -25,6 +25,7 @@ def pytest_configure():
 def request_factory():
     return RequestFactory()
 
+
 @pytest.fixture
 def type_defs():
     return """
@@ -124,9 +125,7 @@ def subscriptions():
 
 @pytest.fixture
 def schema(type_defs, resolvers, mutations, subscriptions):
-    return make_executable_schema(
-        type_defs, [resolvers, mutations, subscriptions, upload_scalar]
-    )
+    return make_executable_schema(type_defs, [resolvers, mutations, subscriptions, upload_scalar])
 
 
 @pytest.fixture
