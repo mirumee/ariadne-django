@@ -38,14 +38,6 @@ class BaseView(TemplateView):
     extensions: Optional[Extensions] = None
     middleware: Optional[MiddlewareManager] = None
 
-    def dispatch(self, *args, **kwargs):
-        if not self.schema:
-            raise ValueError("GraphQLView was initialized without schema.")
-        try:
-            return super().dispatch(*args, **kwargs)
-        except HttpBadRequestError as error:
-            return HttpResponseBadRequest(error.message)
-
     def get(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
         options = DEFAULT_PLAYGROUND_OPTIONS.copy()
         if self.playground_options:
@@ -119,8 +111,19 @@ class BaseView(TemplateView):
 class GraphQLView(BaseView):
     _query_executor = staticmethod(graphql_sync)
 
+    def dispatch(self, *args, **kwargs):
+        if not self.schema:
+            raise ValueError("GraphQLView was initialized without schema.")
+        try:
+            return super().dispatch(*args, **kwargs)
+        except HttpBadRequestError as error:
+            return HttpResponseBadRequest(error.message)
+
     def post(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
-        data = self.extract_data_from_request(request)
+        try:
+            data = self.extract_data_from_request(request)
+        except HttpBadRequestError as error:
+            return HttpResponseBadRequest(error.message)
         success, result = self.execute_query(request, data)
         status_code = 200 if success else 400
         return JsonResponse(result, status=status_code)
