@@ -1,10 +1,11 @@
+import asyncio
 import json
 from typing import Any, Callable, Optional, Union, cast
 
 from django.conf import settings
 from django.http import HttpRequest, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
+from django.utils.decorators import classonlymethod, method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
@@ -12,8 +13,8 @@ from ariadne.constants import DATA_TYPE_JSON, DATA_TYPE_MULTIPART
 from ariadne.exceptions import HttpBadRequestError
 from ariadne.file_uploads import combine_multipart_data
 from ariadne.format_error import format_error
-from ariadne.graphql import graphql_sync
-from ariadne.types import ContextValue, ErrorFormatter, ExtensionList, GraphQLResult, RootValue, ValidationRules
+from ariadne.graphql import graphql, graphql_sync
+from ariadne.types import ContextValue, ErrorFormatter, ExtensionList, RootValue, ValidationRules
 
 from graphql import GraphQLSchema
 from graphql.execution import MiddlewareManager
@@ -24,8 +25,7 @@ Extensions = Union[Callable[[Any, Optional[ContextValue]], ExtensionList], Exten
 DEFAULT_PLAYGROUND_OPTIONS = {"request.credentials": "same-origin"}
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class GraphQLView(TemplateView):
+class BaseView(TemplateView):
     http_method_names = ["get", "post", "options"]
     template_name = "ariadne_django/graphql_playground.html"
     playground_options: Optional[dict] = None
@@ -49,19 +49,6 @@ class GraphQLView(TemplateView):
             self.get_template_names(),
             {"playground_options": json.dumps(options)},
         )
-
-    def post(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
-        if not self.schema:
-            raise ValueError("GraphQLView was initialized without schema.")
-
-        try:
-            data = self.extract_data_from_request(request)
-        except HttpBadRequestError as error:
-            return HttpResponseBadRequest(error.message)
-
-        success, result = self.execute_query(request, data)
-        status_code = 200 if success else 400
-        return JsonResponse(result, status=status_code)
 
     def extract_data_from_request(self, request: HttpRequest):
         content_type = request.content_type or ""
@@ -92,23 +79,21 @@ class GraphQLView(TemplateView):
 
         return combine_multipart_data(operations, files_map, request.FILES)
 
-    def execute_query(self, request: HttpRequest, data: dict) -> GraphQLResult:
+    def get_kwargs_graphql(self, request: HttpRequest) -> dict:
         context_value = self.get_context_for_request(request)
         extensions = self.get_extensions_for_request(request, context_value)
 
-        return graphql_sync(
-            cast(GraphQLSchema, self.schema),
-            data,
-            context_value=context_value,
-            root_value=self.root_value,
-            validation_rules=self.validation_rules,
-            debug=settings.DEBUG,
-            introspection=self.introspection,
-            logger=self.logger,
-            error_formatter=self.error_formatter or format_error,
-            extensions=extensions,
-            middleware=self.middleware,
-        )
+        return {
+            "context_value": context_value,
+            "root_value": self.root_value,
+            "validation_rules": self.validation_rules,
+            "debug": settings.DEBUG,
+            "introspection": self.introspection,
+            "logger": self.logger,
+            "error_formatter": self.error_formatter or format_error,
+            "extensions": extensions,
+            "middleware": self.middleware,
+        }
 
     def get_context_for_request(self, request: HttpRequest) -> Optional[ContextValue]:
         if callable(self.context_value):
@@ -119,3 +104,41 @@ class GraphQLView(TemplateView):
         if callable(self.extensions):
             return self.extensions(request, context)  # pylint: disable=not-callable
         return self.extensions
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class GraphQLView(BaseView):
+    def dispatch(self, *args, **kwargs):
+        if not self.schema:
+            raise ValueError("GraphQLView was initialized without schema.")
+        try:
+            return super().dispatch(*args, **kwargs)
+        except HttpBadRequestError as error:
+            return HttpResponseBadRequest(error.message)
+
+    def post(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
+        try:
+            data = self.extract_data_from_request(request)
+        except HttpBadRequestError as error:
+            return HttpResponseBadRequest(error.message)
+        success, result = graphql_sync(cast(GraphQLSchema, self.schema), data, **self.get_kwargs_graphql(request))
+        status_code = 200 if success else 400
+        return JsonResponse(result, status=status_code)
+
+
+class GraphQLAsyncView(BaseView):
+    @classonlymethod
+    def as_view(cls, **initkwargs):
+        view = super().as_view(**initkwargs)
+        view._is_coroutine = asyncio.coroutines._is_coroutine  # pylint: disable=protected-access
+        view.csrf_exempt = True
+        return view
+
+    async def post(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
+        try:
+            data = self.extract_data_from_request(request)
+        except HttpBadRequestError as error:
+            return HttpResponseBadRequest(error.message)
+        success, result = await graphql(cast(GraphQLSchema, self.schema), data, **self.get_kwargs_graphql(request))
+        status_code = 200 if success else 400
+        return JsonResponse(result, status=status_code)

@@ -5,6 +5,7 @@ isort==5.7.0
 mypy==0.812
 pylint==2.7.2
 pytest==6.2.2
+pytest-asyncio==0.14.0
 pytest-cov==2.11.1
 pytest-django==4.1.0
 pytest-mock==3.5.1
