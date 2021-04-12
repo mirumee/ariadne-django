@@ -12,7 +12,7 @@ from ariadne.constants import DATA_TYPE_JSON, DATA_TYPE_MULTIPART
 from ariadne.exceptions import HttpBadRequestError
 from ariadne.file_uploads import combine_multipart_data
 from ariadne.format_error import format_error
-from ariadne.graphql import graphql_sync
+from ariadne.graphql import graphql_sync, graphql
 from ariadne.types import ContextValue, ErrorFormatter, ExtensionList, GraphQLResult, RootValue, ValidationRules
 
 from graphql import GraphQLSchema
@@ -125,5 +125,24 @@ class GraphQLView(BaseView):
         except HttpBadRequestError as error:
             return HttpResponseBadRequest(error.message)
         success, result = self.execute_query(request, data)
+        status_code = 200 if success else 400
+        return JsonResponse(result, status=status_code)
+
+
+class GraphQLAsyncView(BaseView):
+    _query_executor = staticmethod(graphql)
+
+    async def __call__(self, *args, **kwargs):
+        return super().__call__(*args, **kwargs)
+
+    async def get(self, *args, **kwargs):
+        return super().get(*args, **kwargs)
+
+    async def post(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
+        try:
+            data = self.extract_data_from_request(request)
+        except HttpBadRequestError as error:
+            return HttpResponseBadRequest(error.message)
+        success, result = await self.execute_query(request, data)
         status_code = 200 if success else 400
         return JsonResponse(result, status=status_code)
