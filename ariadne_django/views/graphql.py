@@ -7,7 +7,8 @@ from django.http import HttpRequest, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
 from django.utils.decorators import classonlymethod, method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import TemplateView
+from django.views.generic import View
+from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
 from ariadne.constants import DATA_TYPE_JSON, DATA_TYPE_MULTIPART
 from ariadne.exceptions import HttpBadRequestError
@@ -25,7 +26,7 @@ Extensions = Union[Callable[[Any, Optional[ContextValue]], ExtensionList], Exten
 DEFAULT_PLAYGROUND_OPTIONS = {"request.credentials": "same-origin"}
 
 
-class BaseView(TemplateView):
+class BaseGraphQLView(TemplateResponseMixin, ContextMixin, View):
     http_method_names = ["get", "post", "options"]
     template_name = "ariadne_django/graphql_playground.html"
     playground_options: Optional[dict] = None
@@ -39,7 +40,7 @@ class BaseView(TemplateView):
     extensions: Optional[Extensions] = None
     middleware: Optional[MiddlewareManager] = None
 
-    def get(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
+    def _get(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
         options = DEFAULT_PLAYGROUND_OPTIONS.copy()
         if self.playground_options:
             options.update(self.playground_options)
@@ -107,7 +108,7 @@ class BaseView(TemplateView):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class GraphQLView(BaseView):
+class GraphQLView(BaseGraphQLView):
     def dispatch(self, *args, **kwargs):
         if not self.schema:
             raise ValueError("GraphQLView was initialized without schema.")
@@ -115,6 +116,9 @@ class GraphQLView(BaseView):
             return super().dispatch(*args, **kwargs)
         except HttpBadRequestError as error:
             return HttpResponseBadRequest(error.message)
+
+    def get(self, *args, **kwargs):
+        return self._get(*args, **kwargs)
 
     def post(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
         try:
@@ -126,13 +130,16 @@ class GraphQLView(BaseView):
         return JsonResponse(result, status=status_code)
 
 
-class GraphQLAsyncView(BaseView):
+@method_decorator(csrf_exempt, name="dispatch")
+class GraphQLAsyncView(BaseGraphQLView):
     @classonlymethod
     def as_view(cls, **initkwargs):
         view = super().as_view(**initkwargs)
         view._is_coroutine = asyncio.coroutines._is_coroutine  # pylint: disable=protected-access
-        view.csrf_exempt = True
         return view
+
+    async def get(self, *args, **kwargs):
+        return self._get(*args, **kwargs)
 
     async def post(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
         try:
