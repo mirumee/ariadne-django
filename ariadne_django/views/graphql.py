@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.utils.decorators import classonlymethod, method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
-from django.views.generic.base import TemplateResponseMixin, ContextMixin
+from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
 from ariadne.constants import DATA_TYPE_JSON, DATA_TYPE_MULTIPART
 from ariadne.exceptions import HttpBadRequestError
