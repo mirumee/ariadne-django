@@ -16,6 +16,7 @@ def test_playground_options_can_be_set_on_view_init(request_factory, snapshot, s
     assert response.status_code == 200
     snapshot.assert_match(response.content)
 
+
 @pytest.mark.asyncio
 async def test_async_playground_html_is_served_on_get_request(request_factory, snapshot, schema):
     view = GraphQLAsyncView.as_view(schema=schema)
