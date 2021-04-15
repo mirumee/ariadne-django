@@ -39,7 +39,7 @@ class BaseView(TemplateView):
     extensions: Optional[Extensions] = None
     middleware: Optional[MiddlewareManager] = None
 
-    def get(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
+    def _get(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
         options = DEFAULT_PLAYGROUND_OPTIONS.copy()
         if self.playground_options:
             options.update(self.playground_options)
@@ -116,6 +116,9 @@ class GraphQLView(BaseView):
         except HttpBadRequestError as error:
             return HttpResponseBadRequest(error.message)
 
+    def get(self, *args, **kwargs):
+        return self._get(*args, **kwargs)
+
     def post(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
         try:
             data = self.extract_data_from_request(request)
@@ -133,6 +136,9 @@ class GraphQLAsyncView(BaseView):
         view._is_coroutine = asyncio.coroutines._is_coroutine  # pylint: disable=protected-access
         view.csrf_exempt = True
         return view
+
+    async def get(self, *args, **kwargs):
+        return self._get(*args, **kwargs)
 
     async def post(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
         try:
