@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 from django.conf import settings
 from django.test import RequestFactory
 
@@ -24,6 +26,36 @@ def pytest_configure():
 @pytest.fixture
 def request_factory():
     return RequestFactory()
+
+
+@pytest.fixture
+def graphql_resolve_info():
+    def build_object(request_method, url, user):
+        factory = RequestFactory()
+        request = getattr(factory, request_method.lower())(url)
+        request.user = user
+
+        info = SimpleNamespace()
+        info.context = {"request": request}
+        return info
+
+    return build_object
+
+
+@pytest.fixture
+def unauthenticated_user():
+    user = SimpleNamespace()
+    user.is_authenticated = False
+    user.is_anonymous = True
+    return user
+
+
+@pytest.fixture
+def authenticated_user():
+    user = SimpleNamespace()
+    user.is_authenticated = True
+    user.is_anonymous = False
+    return user
 
 
 @pytest.fixture
