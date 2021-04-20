@@ -1,0 +1,2 @@
+from .login_is_required import login_required
+from .permission_is_required import permission_required

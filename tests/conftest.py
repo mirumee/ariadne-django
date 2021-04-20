@@ -59,6 +59,30 @@ def authenticated_user():
 
 
 @pytest.fixture
+def authenticated_user_with_permissions():
+    def has_perms(*args, **kwargs):  # pylint: disable=unused-argument
+        return True
+
+    user = SimpleNamespace()
+    user.is_authenticated = True
+    user.is_anonymous = False
+    user.has_perms = has_perms
+    return user
+
+
+@pytest.fixture
+def authenticated_user_without_permissions():
+    def has_perms(*args, **kwargs):  # pylint: disable=unused-argument
+        return False
+
+    user = SimpleNamespace()
+    user.is_authenticated = True
+    user.is_anonymous = False
+    user.has_perms = has_perms
+    return user
+
+
+@pytest.fixture
 def type_defs():
     return """
         scalar Upload
