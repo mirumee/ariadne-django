@@ -27,6 +27,7 @@ from ariadne_django.scalars import (
     time_scalar,
     uuid_scalar,
 )
+from ariadne_django.scalars.timedelta import serialize_timedelta, parse_timedelta_value, timedelta_scalar
 
 
 @pytest.fixture
@@ -42,6 +43,11 @@ def date(datetime):
 @pytest.fixture
 def time(datetime):
     return datetime.time()
+
+
+@pytest.fixture
+def timedelta():
+    return timezone.timedelta(days=1)
 
 
 def test_date_serializer_serializes_datetime(datetime, date):
@@ -146,6 +152,10 @@ def test_time_serializer_serializes_time(time):
     assert serialize_time(time) == time.isoformat()
 
 
+def test_timedelta_serializer_serializes_timedelta(timedelta):
+    assert timedelta.total_seconds() == serialize_timedelta(timedelta)
+
+
 def test_time_parser_returns_valid_time_from_datetime_iso8601_str(datetime, time):
     assert parse_time_value(datetime.isoformat()) == time
 
@@ -161,6 +171,14 @@ def test_time_parser_returns_valid_time_from_other_time_str(time):
 def test_time_parser_raises_value_error_on_invalid_data():
     with pytest.raises(ValueError):
         parse_time_value("nothing")
+
+
+def test_timedelta_parser_parses_int(timedelta):
+    assert parse_timedelta_value(int(timedelta.total_seconds())) == timedelta
+
+
+def test_timedelta_parser_parses_float(timedelta):
+    assert parse_timedelta_value(timedelta.total_seconds()) == timedelta
 
 
 def test_date_scalar_has_serializer_set():
@@ -185,6 +203,14 @@ def test_time_scalar_has_serializer_set():
 
 def test_time_scalar_has_value_parser_set():
     assert time_scalar._parse_value == parse_time_value
+
+
+def test_timedelta_scalar_has_serializer_set():
+    assert timedelta_scalar._serialize == serialize_timedelta
+
+
+def test_timedelta_scalar_has_value_parser_set():
+    assert timedelta_scalar._parse_value == parse_timedelta_value
 
 
 def test_decimal_scalar_has_serializer_set():
