@@ -1,5 +1,10 @@
-import django.core.exceptions
+from types import SimpleNamespace
+from unittest import mock
 
+import django.core.exceptions
+from django.db import DatabaseError
+
+import pytest
 from graphql import GraphQLError
 
 from ariadne_django.formatters.errors.simple import format_graphql_error
@@ -199,3 +204,73 @@ def test_format_error_with_debug():
         "path": None,
         "extensions": {"exception": None},
     }
+
+
+def test_get_postgres_error_details_import_failed():
+    with pytest.raises(django.core.exceptions.ImproperlyConfigured):
+        from ariadne_django.formatters.errors.utils.get_postgres_error_details import (  # pylint: disable=C0415
+            get_postgres_error_details,
+        )
+
+        get_postgres_error_details(DatabaseError("meow"))
+
+
+def test_get_postgres_error_details_no_error_code(mocker):
+    mock.patch.dict("sys.modules", psycopg2=mocker.MagicMock()).start()
+    from ariadne_django.formatters.errors.utils.get_postgres_error_details import (  # pylint: disable=C0415
+        get_postgres_error_details,
+    )
+
+    result = get_postgres_error_details(DatabaseError("meow"))
+    expected_result = {
+        "non_field_errors": ["A database error occurred that prevented this request from being completed."]
+    }
+    assert result == expected_result
+
+
+def test_get_postgres_error_details_invalid_data(mocker):
+    mock.patch.dict("sys.modules", psycopg2=mocker.MagicMock()).start()
+    from ariadne_django.formatters.errors.utils.get_postgres_error_details import (  # pylint: disable=C0415
+        get_postgres_error_details,
+    )
+
+    error = DatabaseError("meow")
+    error.__cause__ = Exception()
+    setattr(error.__cause__, "pgcode", "22003")
+    result = get_postgres_error_details(error)
+    expected_result = {
+        "non_field_errors": ["The information you provided is not acceptable."]
+    }
+    assert result == expected_result
+
+
+def test_get_postgres_error_details_unique_error(mocker):
+    mock.patch.dict("sys.modules", psycopg2=mocker.MagicMock()).start()
+    from ariadne_django.formatters.errors.utils.get_postgres_error_details import (  # pylint: disable=C0415
+        get_postgres_error_details,
+    )
+
+    error = DatabaseError("meow")
+    error.__cause__ = Exception()
+    setattr(error.__cause__, "pgcode", "23505")
+    result = get_postgres_error_details(error)
+    expected_result = {
+        "non_field_errors": ["The item you are attempting to save already exists."]
+    }
+    assert result == expected_result
+
+
+def test_get_postgres_error_details_other_error(mocker):
+    mock.patch.dict("sys.modules", psycopg2=mocker.MagicMock()).start()
+    from ariadne_django.formatters.errors.utils.get_postgres_error_details import (  # pylint: disable=C0415
+        get_postgres_error_details,
+    )
+
+    error = DatabaseError("meow")
+    error.__cause__ = Exception()
+    setattr(error.__cause__, "pgcode", "28P01")
+    result = get_postgres_error_details(error)
+    expected_result = {
+        "non_field_errors": ["A database error occurred that prevented this request from being completed."]
+    }
+    assert result == expected_result
