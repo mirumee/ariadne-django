@@ -3,7 +3,7 @@ from django.db import DatabaseError
 
 
 try:
-    import psycopg2
+    import psycopg2  # pylint: disable=W0611
 except ImportError as error:
     raise django.core.exceptions.ImproperlyConfigured("Cannot use this function without psycopg2.") from error
 
