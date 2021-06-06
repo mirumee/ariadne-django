@@ -1,4 +1,3 @@
-from types import SimpleNamespace
 from unittest import mock
 
 import django.core.exceptions
@@ -238,9 +237,7 @@ def test_get_postgres_error_details_invalid_data(mocker):
     error.__cause__ = Exception()
     setattr(error.__cause__, "pgcode", "22003")
     result = get_postgres_error_details(error)
-    expected_result = {
-        "non_field_errors": ["The information you provided is not acceptable."]
-    }
+    expected_result = {"non_field_errors": ["The information you provided is not acceptable."]}
     assert result == expected_result
 
 
@@ -254,9 +251,7 @@ def test_get_postgres_error_details_unique_error(mocker):
     error.__cause__ = Exception()
     setattr(error.__cause__, "pgcode", "23505")
     result = get_postgres_error_details(error)
-    expected_result = {
-        "non_field_errors": ["The item you are attempting to save already exists."]
-    }
+    expected_result = {"non_field_errors": ["The item you are attempting to save already exists."]}
     assert result == expected_result
 
 

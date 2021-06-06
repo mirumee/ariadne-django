@@ -15,9 +15,7 @@ def get_postgres_error_details(
     default_message = "A database error occurred that prevented this request from being completed."
     if not error_code:
         message = default_message
-    elif error_code.startswith("22") or (
-        error_code.startswith("23") and error_code not in ["23505"]
-    ):
+    elif error_code.startswith("22") or (error_code.startswith("23") and error_code not in ["23505"]):
         # Data exceptions - almost always invalid input that violates db rules.
         # Technically, this should not be on the end user...
         message = "The information you provided is not acceptable."
