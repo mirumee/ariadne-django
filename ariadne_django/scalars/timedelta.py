@@ -3,6 +3,7 @@ from typing import Union
 
 from ariadne import ScalarType
 
+
 timedelta_scalar = ScalarType("Timedelta")
 
 
