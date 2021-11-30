@@ -1,8 +1,7 @@
+import json
 from typing import Any
 
 from ariadne import ScalarType
-
-import json
 
 
 json_scalar = ScalarType("JSON")

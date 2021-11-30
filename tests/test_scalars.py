@@ -1,11 +1,11 @@
 # pylint: disable=comparison-with-callable,protected-access
 import uuid
 from decimal import Decimal, InvalidOperation
+from json import JSONDecodeError
 
 from django.utils import timezone
 
 import pytest
-from json import JSONDecodeError
 
 from ariadne_django.scalars import (
     date_scalar,
@@ -27,7 +27,7 @@ from ariadne_django.scalars import (
     time_scalar,
     uuid_scalar,
 )
-from ariadne_django.scalars.timedelta import serialize_timedelta, parse_timedelta_value, timedelta_scalar
+from ariadne_django.scalars.timedelta import parse_timedelta_value, serialize_timedelta, timedelta_scalar
 
 
 @pytest.fixture
