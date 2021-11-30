@@ -26,10 +26,10 @@ DEFAULT_PLAYGROUND_OPTIONS = {
     "settings": {
         "request.credentials": "same-origin",
     },
-
     # Request HTTP headers added by default
     "headers": {},
 }
+
 
 class BaseGraphQLView(TemplateResponseMixin, ContextMixin, View):
     http_method_names = ["get", "post", "options"]

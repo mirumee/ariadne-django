@@ -27,7 +27,7 @@ from ariadne_django.scalars import (
     time_scalar,
     uuid_scalar,
 )
-from ariadne_django.scalars.timedelta import serialize_timedelta, parse_timedelta_value, timedelta_scalar
+from ariadne_django.scalars.timedelta import parse_timedelta_value, serialize_timedelta, timedelta_scalar
 
 
 @pytest.fixture
