@@ -2,7 +2,7 @@ from typing import Any
 
 from ariadne import ScalarType
 
-import simplejson as json  # supports decimals, etc.
+import json
 
 
 json_scalar = ScalarType("JSON")

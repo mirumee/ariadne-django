@@ -3,7 +3,7 @@ from typing import IO, Any, Dict, List, Optional, Tuple
 from django.http import HttpResponse
 from django.test import Client, TestCase
 
-import simplejson as json
+import json
 
 
 class BaseGraphQLQueryTest(TestCase):

@@ -5,7 +5,7 @@ from decimal import Decimal, InvalidOperation
 from django.utils import timezone
 
 import pytest
-from simplejson import JSONDecodeError
+from json import JSONDecodeError
 
 from ariadne_django.scalars import (
     date_scalar,
