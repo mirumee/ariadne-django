@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import django.core.exceptions
 
 from ariadne import get_error_extension
@@ -66,7 +68,7 @@ def format_graphql_error(error, error_map=None, debug=False):
     if error_map is None:
         error_map = ERROR_MAP
 
-    formatted = error.formatted
+    formatted = deepcopy(error.formatted)
     original_error = extract_original_error(error)
     for row_dict in error_map:
         if isinstance(original_error, row_dict.get("classes", tuple())):
