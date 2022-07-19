@@ -56,7 +56,7 @@ def format_graphql_error(error, error_map=None, debug=False):
     A number of bad practices exist and there is no consensus on an appropriate best practice.
     As such, we offer yet another potential solution - one that can be either used out of the box
     or as a reference implementation.  Generally speaking, we want to carry as much of the original
-    Django error messaging around.
+    Django error messaging around as possible.
 
     Thanks and inspiration for the original implementation of this by Lexria were found in Ariadne documentation
     and based in https://koistya.medium.com/validation-and-user-errors-in-graphql-mutations-39ca79cd00bf
