@@ -11,7 +11,8 @@ except ImportError as error:
 def get_postgres_error_details(
     error: DatabaseError,
 ) -> dict:
-    error_code = getattr(getattr(error, "__cause__", None), "pgcode", None)
+    cause = getattr(error, "__cause__", None)
+    error_code = getattr(cause, "pgcode", "")
     default_message = "A database error occurred that prevented this request from being completed."
     if not error_code:
         message = default_message
