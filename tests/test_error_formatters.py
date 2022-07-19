@@ -60,8 +60,6 @@ def test_format_graphql_error_no_original_error():
     formatted_error_messaging = format_graphql_error(graphql_error)
     assert formatted_error_messaging == {
         "message": "Meow",
-        "locations": None,
-        "path": None,
     }
 
 
@@ -72,8 +70,6 @@ def test_format_graphql_error_django_validation_error():
     formatted_error_messaging = format_graphql_error(graphql_error)
     expected_value = {
         "message": "The information you provided is not acceptable.",
-        "locations": None,
-        "path": None,
         "code": "INVALID_INPUT",
         "details": {"cat": ["meow", "hiss"], "non_field_errors": ["oink"]},
     }
@@ -86,8 +82,6 @@ def test_format_graphql_error_object_does_not_exist_error():
     formatted_error_messaging = format_graphql_error(graphql_error)
     expected_value = {
         "message": "Not found",
-        "locations": None,
-        "path": None,
         "code": "NOT_FOUND",
         "details": {
             "non_field_errors": ["An error occurred attempting to locate what you requested - no objects were found."]
@@ -102,8 +96,6 @@ def test_format_graphql_error_django_permission_denied():
     formatted_error_messaging = format_graphql_error(graphql_error)
     expected_value = {
         "message": "Access forbidden",
-        "locations": None,
-        "path": None,
         "code": "FORBIDDEN",
         "details": {"non_field_errors": ["This request is understood, but is not able to be processed."]},
     }
@@ -116,8 +108,6 @@ def test_format_graphql_error_multiple_objects_error():
     formatted_error_messaging = format_graphql_error(graphql_error)
     expected_value = {
         "message": "Many found",
-        "locations": None,
-        "path": None,
         "code": "MANY_FOUND",
         "details": {
             "non_field_errors": ["An error occurred attempting to locate what you requested - many objects were found."]
@@ -132,8 +122,6 @@ def test_format_graphql_error_configuration_error():
     formatted_error_messaging = format_graphql_error(graphql_error)
     expected_value = {
         "message": "Internal server error",
-        "locations": None,
-        "path": None,
         "code": "INTERNAL_SERVER_ERROR",
         "details": {"non_field_errors": ["A server error occurred that prevented this request from being completed."]},
     }
@@ -156,8 +144,6 @@ def test_format_graphql_error_custom_map():
     formatted_error_messaging = format_graphql_error(graphql_error, error_map=custom_map)
     expected_value = {
         "message": "I like pie",
-        "locations": None,
-        "path": None,
         "code": "PIE",
         "details": {"non_field_errors": ["pie > cake"]},
     }
@@ -186,8 +172,6 @@ def test_format_graphql_error_custom_map_processes_once():
     formatted_error_messaging = format_graphql_error(graphql_error, error_map=custom_map)
     expected_value = {
         "message": "I like pie",
-        "locations": None,
-        "path": None,
         "code": "PIE",
         "details": {"non_field_errors": ["pie > cake"]},
     }
@@ -199,8 +183,6 @@ def test_format_error_with_debug():
     formatted_error_messaging = format_graphql_error(graphql_error, debug=True)
     assert formatted_error_messaging == {
         "message": "Meow",
-        "locations": None,
-        "path": None,
         "extensions": {"exception": None},
     }
 
