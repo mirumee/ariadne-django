@@ -11,6 +11,7 @@ PG_DATA_VIOLATIONS_PREFIX = "22"
 PG_INTEGRITY_VIOLATIONS_PREFIX = "23"
 PG_INTEGRITY_UNIQUE_CONSTRAINT_VIOLATION = "23505"
 
+
 def get_postgres_error_details(
     error: DatabaseError,
 ) -> dict:
@@ -19,7 +20,10 @@ def get_postgres_error_details(
     default_message = "A database error occurred that prevented this request from being completed."
     if not error_code:
         message = default_message
-    elif error_code.startswith(PG_DATA_VIOLATIONS_PREFIX) or (error_code.startswith(PG_INTEGRITY_VIOLATIONS_PREFIX) and error_code not in [PG_INTEGRITY_UNIQUE_CONSTRAINT_VIOLATION]):
+    elif error_code.startswith(PG_DATA_VIOLATIONS_PREFIX) or (
+        error_code.startswith(PG_INTEGRITY_VIOLATIONS_PREFIX)
+        and error_code not in [PG_INTEGRITY_UNIQUE_CONSTRAINT_VIOLATION]
+    ):
         # Data exceptions - almost always invalid input that violates db rules.
         # Technically, this should not be on the end user...
         message = "The information you provided is not acceptable."
