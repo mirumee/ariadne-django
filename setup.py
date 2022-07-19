@@ -28,7 +28,7 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     license="BSD",
-    version="0.2.0",
+    version="0.3.0",
     url="https://github.com/reset-button/ariadne_django",
     packages=["ariadne_django"],
     include_package_data=True,
