@@ -1,11 +1,10 @@
+import json
 from typing import Any
 
 from ariadne import ScalarType
 
-import simplejson as json  # supports decimals, etc.
 
-
-json_scalar = ScalarType("JSONBlob")
+json_scalar = ScalarType("JSON")
 
 
 @json_scalar.serializer

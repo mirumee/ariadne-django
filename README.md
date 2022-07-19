@@ -1,6 +1,10 @@
 ![Build Status](https://github.com/reset-button/ariadne_django/actions/workflows/main.yml/badge.svg)
 [![Codecov](https://codecov.io/gh/reset-button/ariadne_django/branch/main/graph/badge.svg)](https://codecov.io/gh/reset-button/ariadne_django)
 
+# Maintainer status
+
+We're looking for a new maintainer, the folks that previously worked on this are off to new pastures and have very limited availability.
+
 # Ariadne
 
 Ariadne is a Python library for implementing [GraphQL](http://graphql.github.io/) servers.
