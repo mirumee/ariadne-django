@@ -1,5 +1,5 @@
 import json
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional, Type, Union
 
 from django.conf import settings
 from django.http import HttpRequest
@@ -14,8 +14,7 @@ from ariadne.format_error import format_error
 from ariadne.types import ContextValue, ErrorFormatter, ExtensionList, RootValue, ValidationRules
 
 from graphql import GraphQLSchema
-from graphql.execution import MiddlewareManager
-
+from graphql.execution import MiddlewareManager, ExecutionContext
 
 Extensions = Union[Callable[[Any, Optional[ContextValue]], ExtensionList], ExtensionList]
 
@@ -44,6 +43,7 @@ class BaseGraphQLView(TemplateResponseMixin, ContextMixin, View):
     error_formatter: Optional[ErrorFormatter] = None
     extensions: Optional[Extensions] = None
     middleware: Optional[MiddlewareManager] = None
+    execution_context_class: Optional[Type[ExecutionContext]] = None
 
     def _get(self, request: HttpRequest, *args, **kwargs):  # pylint: disable=unused-argument
         options = DEFAULT_PLAYGROUND_OPTIONS.copy()
@@ -99,9 +99,10 @@ class BaseGraphQLView(TemplateResponseMixin, ContextMixin, View):
             "error_formatter": self.error_formatter or format_error,
             "extensions": extensions,
             "middleware": self.middleware,
+            "execution_context_class": self.execution_context_class or ExecutionContext,
         }
 
-    def get_context_for_request(self, request: HttpRequest) -> Optional[ContextValue]:
+    def get_context_for_request(self, request: HttpRequest, data=None) -> Optional[ContextValue]:
         if callable(self.context_value):
             return self.context_value(request)  # pylint: disable=not-callable
         return self.context_value or {"request": request}

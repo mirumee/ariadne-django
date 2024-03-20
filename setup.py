@@ -13,6 +13,7 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
@@ -34,7 +35,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "django>=2.2.0",
-        "ariadne>=0.13.0",
+        "ariadne>=0.18.0",
     ],
     classifiers=CLASSIFIERS,
     platforms=["any"],
