@@ -34,7 +34,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "django>=2.2.0",
-        "ariadne>=0.13.0",
+        "ariadne>=0.18.0",
     ],
     classifiers=CLASSIFIERS,
     platforms=["any"],

@@ -3,8 +3,12 @@ from unittest.mock import ANY, Mock
 
 from django.test import override_settings
 
-from ariadne.types import ExtensionSync
-
+try:
+    from ariadne.types import ExtensionSync
+except ImportError:
+    # From ariadne 0.20 Extension supports both sync and async contexts
+    # https://github.com/mirumee/ariadne/blob/main/CHANGELOG.md#020-2023-06-21
+    from ariadne.types import Extension as ExtensionSync
 import pytest
 
 from ariadne_django.views import GraphQLView
@@ -81,7 +85,7 @@ def test_custom_root_value_function_is_called_with_context_value(request_factory
         context_value={"test": "TEST-CONTEXT"},
         root_value=get_root_value,
     )
-    get_root_value.assert_called_once_with({"test": "TEST-CONTEXT"}, ANY)
+    get_root_value.assert_called_once_with({"test": "TEST-CONTEXT"}, ANY, ANY, ANY)
 
 
 def test_custom_validation_rule_is_called_by_query_validation(mocker, request_factory, schema, validation_rule):

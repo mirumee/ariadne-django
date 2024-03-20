@@ -1,6 +1,6 @@
 -r requirements.txt
 black==22.6.0
-codecov==2.1.11
+codecov>=2.1.11
 django-stubs==1.7.0
 isort==5.7.0
 mypy==0.812
