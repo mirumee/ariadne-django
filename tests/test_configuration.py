@@ -1,7 +1,10 @@
 import json
-from unittest.mock import ANY, Mock
+from typing import List
+from unittest.mock import ANY, Mock, call
 
 from django.test import override_settings
+from graphql.language import FieldNode
+from graphql.pyutils import Path
 
 try:
     from ariadne.types import ExtensionSync
@@ -9,6 +12,7 @@ except ImportError:
     # From ariadne 0.20 Extension supports both sync and async contexts
     # https://github.com/mirumee/ariadne/blob/main/CHANGELOG.md#020-2023-06-21
     from ariadne.types import Extension as ExtensionSync
+from graphql import ExecutionContext, GraphQLBoolean, GraphQLResolveInfo, GraphQLScalarType
 import pytest
 
 from ariadne_django.views import GraphQLView
@@ -58,6 +62,18 @@ def test_custom_context_value_function_result_is_passed_to_resolvers(request_fac
         context_value=get_context_value,
     )
     assert data == {"data": {"testContext": "TEST-CONTEXT"}}
+
+
+def test_custom_execution_context_is_used_to_execute_operation(mocker, request_factory, schema, execution_context_class):
+    spy_execution_context_execute_operation = mocker.spy(execution_context_class, 'execute_operation')
+
+    execute_query(
+        request_factory,
+        schema,
+        {"query": "{ status }"},
+        execution_context_class=execution_context_class,
+    )
+    spy_execution_context_execute_operation.assert_called_once()
 
 
 def test_custom_root_value_is_passed_to_resolvers(request_factory, schema):

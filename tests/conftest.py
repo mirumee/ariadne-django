@@ -6,7 +6,7 @@ from django.test import RequestFactory
 from ariadne import MutationType, QueryType, SubscriptionType, make_executable_schema, upload_scalar
 
 import pytest
-from graphql import ValidationRule
+from graphql import ExecutionContext, ValidationRule
 
 
 def pytest_configure():
@@ -190,3 +190,11 @@ def validation_rule():
         pass
 
     return NoopRule
+
+
+@pytest.fixture
+def execution_context_class():
+    class CustomExecutionContext(ExecutionContext):
+        pass
+
+    return CustomExecutionContext
